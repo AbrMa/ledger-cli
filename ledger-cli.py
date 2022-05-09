@@ -1,5 +1,8 @@
 import argparse
 
+def read_file(file):
+    pass
+
 def print_report(args):
     f = open(args.file, "r")
     print(f.read())
