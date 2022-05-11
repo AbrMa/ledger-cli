@@ -1,11 +1,16 @@
 import argparse
+import re
 
-def read_file(file):
-    pass
+def read_file(file_name):
+    f = open(file_name, 'r')
+    for line in f.readlines():
+        found_date = re.match(r'\d{4}/\d{1,2}/\d{1,2}', line)
+        if found_date:
+            date = found_date.group()
+        elem = line.split('\t')
 
 def print_report(args):
-    f = open(args.file, 'r')
-    print(f.read())
+    read_file(args.file)
 
 def main():
     parser = argparse.ArgumentParser(description='ledger is a command-line accounting tool based on the power and completeness of double-entry accounting.  It is only a reporting tool, which means it never modifies your data files, but it does offer a large selection of reports, and different ways to customize them to your needs.')
