@@ -3,8 +3,18 @@ from curses.ascii import isdigit
 import re
 import collections
 
-def generate_report(lines):
-    report = collections.defaultdict(list)
+class Currency:
+    def __init__(self, amount = 0, type = '$', visible = True):
+        self.amount = amount
+        self.type = type
+        self.visible = visible
+    
+    def __repr__(self):
+        return f'{self.type} {self.amount} {self.visible}'
+
+
+def get_data(lines):
+    data = collections.defaultdict(list)
     date = ''
     description = ''
     sum_money = 0
@@ -19,18 +29,18 @@ def generate_report(lines):
             sum_money = 0
             continue
 
-        account = get_str_from_regex(r'[^\d]*(\s\s|\s)', line).replace('\t','')
+        account = get_str_from_regex(r'[^\d]*(\s\s|\s)', line).replace('\t','').replace('\n', '')
         money = line.replace(account, '').replace('\n', '').replace('\t', '')
 
         if account and money:
             money = get_money(money)
             sum_money += money
-            report[(date, description)].append((account, money))
+            data[(date, description)].append((account, Currency(money)))
         elif account:
-            report[(date, description)].append((account, sum_money * -1))
+            data[(date, description)].append((account, Currency(sum_money * -1, '$', visible=False)))
             
 
-    return report
+    return data
 
 
 def get_money(str):
@@ -55,7 +65,7 @@ def read_file(file_path):
 
 def print_report(args):
     lines = read_file(args.file)
-    report = generate_report(lines)
+    report = get_data(lines)
     for val, key in report.items():
         print(f'{val} -> {key}')
 
