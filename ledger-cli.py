@@ -1,7 +1,7 @@
 import argparse
-from curses.ascii import isdigit
 import re
-import collections
+from curses.ascii import isdigit
+from collections import defaultdict
 
 class Currency:
     def __init__(self, amount = 0, type = '$', visible = True):
@@ -14,7 +14,7 @@ class Currency:
 
 
 def get_data(lines):
-    data = collections.defaultdict(list)
+    data = defaultdict(list)
     date = ''
     description = ''
     sum_money = 0
@@ -66,8 +66,16 @@ def read_file(file_path):
 def print_report(args):
     lines = read_file(args.file)
     report = get_data(lines)
-    for val, key in report.items():
-        print(f'{val} -> {key}')
+    
+    for key, value in report.items():
+        date, description = key
+        print(f'{date} {description}')
+
+        for account, currency in value:
+            if currency.visible:
+                print(f'\t{account}\t\t{currency.type}{currency.amount}')
+            else:
+                print(f'\t{account}')
 
 def main():
     parser = argparse.ArgumentParser(description='ledger is a command-line accounting tool based on the power and completeness of double-entry accounting.  It is only a reporting tool, which means it never modifies your data files, but it does offer a large selection of reports, and different ways to customize them to your needs.')
