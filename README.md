@@ -12,7 +12,7 @@ Ledger is a command-line accounting tool based on the power and completeness of 
 
 ```-h, --help```           show this help message and exit
 
-```-f FILE, --file FIL```  Read journal data from FILE.
+```-f FILE, --file FILE```  Read journal data from FILE.
 
 ## COMMANDS:
 
