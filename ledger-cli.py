@@ -1,5 +1,7 @@
 import argparse
+from calendar import month
 import re
+import datetime
 from curses.ascii import isdigit
 from collections import defaultdict
 
@@ -10,7 +12,9 @@ class Currency:
         self.visible = visible
     
     def __repr__(self):
-        return f'{self.type} {self.amount} {self.visible}'
+        if self.visible:
+            return f'{self.type} {self.amount}' 
+        return ''
 
 
 def get_data(lines):
@@ -31,17 +35,18 @@ def get_data(lines):
 
         account = get_str_from_regex(r'[^\d]*(\s\s|\s)', line).replace('\t','').replace('\n', '')
         money = line.replace(account, '').replace('\n', '').replace('\t', '')
+        if date:
+            y, m, d = date.split('/')
+            y, m ,d= int(y), int(m), int(d)
 
         if account and money:
             money = get_money(money)
             sum_money += money
-            data[(date, description)].append((account, Currency(money)))
+            data[(datetime.datetime(y,m,d), description)].append((account, Currency(money)))
         elif account:
-            data[(date, description)].append((account, Currency(sum_money * -1, '$', visible=False)))
+            data[(datetime.datetime(y,m,d), description)].append((account, Currency(sum_money * -1, '$', visible=False)))
             
-
     return data
-
 
 def get_money(str):
     money = ''
@@ -65,11 +70,15 @@ def read_file(file_path):
 
 def print_report(args):
     lines = read_file(args.file)
-    report = get_data(lines)
-    
-    for key, value in report.items():
+    report = get_data(lines).items()
+
+    if 'sort' in args:
+        if args.sort == 'date':
+            report = sorted(report)
+
+    for key, value in report:
         date, description = key
-        print(f'{date} {description}')
+        print(f'{date.strftime("%Y/%m/%d")} {description}')
 
         for account, currency in value:
             if currency.visible:
@@ -77,11 +86,16 @@ def print_report(args):
             else:
                 print(f'\t{account}')
 
+def balance(args):
+    lines = read_file(args.file)
+    report = get_data(lines)
+
 def main():
     parser = argparse.ArgumentParser(description='ledger is a command-line accounting tool based on the power and completeness of double-entry accounting.  It is only a reporting tool, which means it never modifies your data files, but it does offer a large selection of reports, and different ways to customize them to your needs.')
     subparsers = parser.add_subparsers(title='COMMANDS', description='ledger accepts several top-level commands, each of which generates a different kind of basic report.')
 
     parser.add_argument('-f', '--file', help='Read journal data from FILE.', required=True)
+    parser.add_argument('-s', '--sort', help='Sort postings by evaluating the given value-expression. For example, to search by date one would use: ledger-cli.py -f FILE -s date print.', required=False)
 
     parser_print = subparsers.add_parser('print', help='Print out the full transactions of any matching postings using the same format as they would appear in a data file.  This can be used to extract subsets from a ledger file to transfer to other files.')
     parser_print.set_defaults(func=print_report)
