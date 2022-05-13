@@ -6,13 +6,17 @@ Ledger is a command-line accounting tool based on the power and completeness of 
 
 ## usage
 
-```ledger-cli.py [-h] -f FILE {print}```
+```
+ledger-cli.py [-h] -f FILE {print}
+```
 
 ## optional arguments
 
 ```-h, --help```           show this help message and exit
 
 ```-f FILE, --file FILE```  Read journal data from FILE.
+
+```-s SORT, --sort SORT```  Sort postings by evaluating the given value-expression. For example, to search by date one would use: ```ledger-cli.py -f FILE -s date print```
 
 ## COMMANDS:
 
