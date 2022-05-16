@@ -4,6 +4,15 @@ Simple implementation of the ledger-cli.
 
 Ledger is a command-line accounting tool based on the power and completeness of double-entry accounting. It is only a reporting tool, which means it never modifies your data files, but it does offer a large selection of reports, and different ways to customize them to your needs.
 
+## Installation
+
+Clone this repo and move to the script file
+
+```
+git clone https://github.com/AbrMa/ledger-cli.git
+cd ledger-cli/
+```
+
 ## usage
 
 ```
